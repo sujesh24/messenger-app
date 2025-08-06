@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:messagener_app/config/theme/app_theme.dart';
 import 'package:messagener_app/presentation/screens/auth/login_screen.dart';
 
 void main() {
@@ -13,6 +14,7 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       title: 'Messagner App',
+      theme: AppTheme.lightTheme,
       home: LoginScreen(),
     );
   }
