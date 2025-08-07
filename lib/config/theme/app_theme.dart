@@ -36,7 +36,7 @@ class AppTheme {
     // Input Decoration
     inputDecorationTheme: InputDecorationTheme(
       filled: true,
-      fillColor: primaryColor.withOpacity(0.1),
+      fillColor: primaryColor.withAlpha(26),
       contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
       border: OutlineInputBorder(
         borderRadius: BorderRadius.circular(24),

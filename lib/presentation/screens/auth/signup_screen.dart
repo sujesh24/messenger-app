@@ -2,7 +2,8 @@ import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:messagener_app/core/common/custom_button.dart';
 import 'package:messagener_app/core/common/custom_text_Field.dart';
-import 'package:messagener_app/presentation/screens/auth/login_screen.dart';
+import 'package:messagener_app/data/services/service_locator.dart';
+import 'package:messagener_app/router/app_router.dart';
 
 class SignupScreen extends StatefulWidget {
   const SignupScreen({super.key});
@@ -210,7 +211,8 @@ class _SignupScreenState extends State<SignupScreen> {
                           recognizer: TapGestureRecognizer()
                             ..onTap = () {
                               // Navigate to Sign in screen
-                              Navigator.of(context).pop();
+                              // Navigator.of(context).pop();
+                              getIt<AppRouter>().pop();
                             },
                         ),
                       ],
