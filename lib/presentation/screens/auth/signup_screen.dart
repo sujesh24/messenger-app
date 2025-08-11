@@ -2,6 +2,7 @@ import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:messagener_app/core/common/custom_button.dart';
 import 'package:messagener_app/core/common/custom_text_Field.dart';
+import 'package:messagener_app/data/repositories/auth_respoitory.dart';
 import 'package:messagener_app/data/services/service_locator.dart';
 import 'package:messagener_app/router/app_router.dart';
 
@@ -100,6 +101,37 @@ class _SignupScreenState extends State<SignupScreen> {
     return null;
   }
 
+  Future<void> _handleSignUp() async {
+    FocusScope.of(context).unfocus();
+    if (_formKey.currentState!.validate()) {
+      try {
+        await getIt<AuthRepository>().signUp(
+          fullName: nameController.text,
+          username: usernameController.text,
+          email: emailController.text,
+          phoneNumber: phoneController.text,
+          password: passwordController.text,
+        );
+        if (!mounted) return;
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Sign up successful!'),
+            backgroundColor: Colors.green,
+          ),
+        );
+      } catch (e) {
+        if (!mounted) return;
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Sign up failed: $e'),
+            backgroundColor: Colors.red,
+          ),
+        );
+        print(e.toString());
+      }
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -184,14 +216,7 @@ class _SignupScreenState extends State<SignupScreen> {
                   ),
                 ),
                 SizedBox(height: 30),
-                CustomButton(
-                  text: 'Sign Up',
-                  onPressed: () {
-                    // Handle sign up logic
-                    FocusScope.of(context).unfocus();
-                    if (_formKey.currentState!.validate()) {}
-                  },
-                ),
+                CustomButton(text: 'Sign Up', onPressed: _handleSignUp),
                 SizedBox(height: 20),
                 Center(
                   child: RichText(
