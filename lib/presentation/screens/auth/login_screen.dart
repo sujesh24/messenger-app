@@ -4,6 +4,7 @@ import 'package:get_it/get_it.dart';
 import 'package:messagener_app/core/common/custom_button.dart';
 import 'package:messagener_app/core/common/custom_text_Field.dart';
 import 'package:messagener_app/data/services/service_locator.dart';
+import 'package:messagener_app/logic/cubits/auth_cubit.dart';
 import 'package:messagener_app/presentation/screens/auth/signup_screen.dart';
 import 'package:messagener_app/router/app_router.dart';
 
@@ -56,6 +57,34 @@ class _LoginScreenState extends State<LoginScreen> {
     }
 
     return null;
+  }
+
+  void _handleLogin() async {
+    if (_formKey.currentState?.validate() ?? false) {
+      // Handle login logic here
+      FocusScope.of(context).unfocus();
+      try {
+        await getIt<AuthCubit>().signIn(
+          email: emailController.text,
+          password: passwordController.text,
+        );
+        if (!mounted) return;
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Login successful!'),
+            backgroundColor: Colors.green,
+          ),
+        );
+      } catch (e) {
+        if (!mounted) return;
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Login failed: $e'),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
+    }
   }
 
   @override
@@ -116,15 +145,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   prefixIcon: Icon(Icons.lock_outline),
                 ),
                 SizedBox(height: 16),
-                CustomButton(
-                  text: 'Login',
-                  onPressed: () {
-                    if (_formKey.currentState?.validate() ?? false) {
-                      // Handle login logic here
-                      FocusScope.of(context).unfocus();
-                    }
-                  },
-                ),
+                CustomButton(text: 'Login', onPressed: _handleLogin),
                 SizedBox(height: 20),
                 Center(
                   child: RichText(

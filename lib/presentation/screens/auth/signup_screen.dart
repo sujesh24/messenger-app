@@ -4,6 +4,7 @@ import 'package:messagener_app/core/common/custom_button.dart';
 import 'package:messagener_app/core/common/custom_text_Field.dart';
 import 'package:messagener_app/data/repositories/auth_respoitory.dart';
 import 'package:messagener_app/data/services/service_locator.dart';
+import 'package:messagener_app/logic/cubits/auth_cubit.dart';
 import 'package:messagener_app/router/app_router.dart';
 
 class SignupScreen extends StatefulWidget {
@@ -105,7 +106,7 @@ class _SignupScreenState extends State<SignupScreen> {
     FocusScope.of(context).unfocus();
     if (_formKey.currentState!.validate()) {
       try {
-        await getIt<AuthRepository>().signUp(
+        await getIt<AuthCubit>().signUp(
           fullName: nameController.text,
           username: usernameController.text,
           email: emailController.text,

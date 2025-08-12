@@ -1,9 +1,14 @@
+import 'dart:async';
 import 'dart:developer';
 
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:messagener_app/data/models/user_model.dart';
 import 'package:messagener_app/data/services/base_repository.dart';
 
 class AuthRepository extends BaseRepository {
+  //state change notifier
+  Stream<User?> get authStateChanges => auth.authStateChanges();
+
   // Sign up method
   Future<UserModel> signUp({
     required String fullName,
@@ -89,5 +94,10 @@ class AuthRepository extends BaseRepository {
       log(e.toString());
       rethrow;
     }
+  }
+
+  //sign out method
+  Future<void> signOut() async {
+    await auth.signOut();
   }
 }
