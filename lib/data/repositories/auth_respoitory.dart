@@ -22,6 +22,24 @@ class AuthRepository extends BaseRepository {
         RegExp(r'\s+'),
         ''.trim(),
       );
+      // Check if email already exists
+      final emailExists = await isEmailExists(email);
+      if (emailExists) {
+        throw "Email already exists";
+      }
+      // Check if phone number already exists
+      final phoneExists = await isPhoneNumberExists(formattedPhoneNumber);
+      if (phoneExists) {
+        throw "Phone number already exists";
+      }
+      // Check if username already exists
+      final usernameExists = await isUserNameExits(username);
+      if (usernameExists) {
+        throw "Username already exists";
+      }
+
+      // Create the user
+
       final userCredential = await auth.createUserWithEmailAndPassword(
         email: email,
         password: password,
@@ -99,5 +117,56 @@ class AuthRepository extends BaseRepository {
   //sign out method
   Future<void> signOut() async {
     await auth.signOut();
+  }
+
+  //check email , phone number and username aleady exists
+
+  //email exists
+  Future<bool> isEmailExists(String email) async {
+    try {
+      final querySnapshot = await firestore
+          .collection('users')
+          .where('email', isEqualTo: email)
+          .limit(1)
+          .get();
+
+      return querySnapshot.docs.isNotEmpty;
+    } catch (e) {
+      log(e.toString());
+      return false;
+    }
+  }
+
+  //phone number exists
+  Future<bool> isPhoneNumberExists(String phoneNumber) async {
+    try {
+      final formattedPhoneNumber = phoneNumber.replaceAll(
+        RegExp(r'\s+'),
+        ''.trim(),
+      );
+      final querySnapshot = await firestore
+          .collection('users')
+          .where('phoneNumber', isEqualTo: formattedPhoneNumber)
+          .limit(1)
+          .get();
+
+      return querySnapshot.docs.isNotEmpty;
+    } catch (_) {
+      return false;
+    }
+  }
+
+  //username exists
+  Future<bool> isUserNameExits(String username) async {
+    try {
+      final querySnapshot = await firestore
+          .collection('users')
+          .where('username', isEqualTo: username)
+          .limit(1)
+          .get();
+      return querySnapshot.docs.isNotEmpty;
+    } catch (_) {
+      return false;
+    }
   }
 }
