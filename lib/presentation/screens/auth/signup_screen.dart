@@ -1,10 +1,13 @@
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:messagener_app/core/common/custom_button.dart';
 import 'package:messagener_app/core/common/custom_text_Field.dart';
 import 'package:messagener_app/data/repositories/auth_respoitory.dart';
 import 'package:messagener_app/data/services/service_locator.dart';
 import 'package:messagener_app/logic/cubits/auth_cubit.dart';
+import 'package:messagener_app/logic/cubits/auth_state.dart';
+import 'package:messagener_app/presentation/screens/home_screen.dart';
 import 'package:messagener_app/router/app_router.dart';
 
 class SignupScreen extends StatefulWidget {
@@ -113,139 +116,135 @@ class _SignupScreenState extends State<SignupScreen> {
           phoneNumber: phoneController.text,
           password: passwordController.text,
         );
-        if (!mounted) return;
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Sign up successful!'),
-            backgroundColor: Colors.green,
-          ),
-        );
-      } catch (e) {
-        if (!mounted) return;
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Sign up failed: $e'),
-            backgroundColor: Colors.red,
-          ),
-        );
-        print(e.toString());
-      }
+      } catch (_) {}
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(),
-      body: SafeArea(
-        child: Form(
-          key: _formKey,
-          child: SingleChildScrollView(
-            padding: const EdgeInsets.symmetric(horizontal: 20),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                SizedBox(height: 30),
-                Text(
-                  "Create Account",
-                  style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                    fontWeight: FontWeight.bold,
+    return BlocListener<AuthCubit, AuthState>(
+      bloc: getIt<AuthCubit>(),
+      listenWhen: (previous, current) {
+        return previous.status != current.status ||
+            previous.error != current.error;
+      },
+      listener: (context, state) {
+        if (state.status == AuthStatus.authenticated) {
+          getIt<AppRouter>().pushAndRemoveUntil(HomeScreen());
+        }
+      },
+      child: Scaffold(
+        appBar: AppBar(),
+        body: SafeArea(
+          child: Form(
+            key: _formKey,
+            child: SingleChildScrollView(
+              padding: const EdgeInsets.symmetric(horizontal: 20),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  SizedBox(height: 30),
+                  Text(
+                    "Create Account",
+                    style: Theme.of(context).textTheme.headlineMedium?.copyWith(
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
-                ),
-                SizedBox(height: 10),
-                Text(
-                  "Please fill in the details to create your account",
-                  style: Theme.of(
-                    context,
-                  ).textTheme.bodyLarge?.copyWith(color: Colors.grey),
-                ),
-                SizedBox(height: 30),
-                CustomTextField(
-                  focusNode: _nameFocusNode,
-                  controller: nameController,
-                  validator: _validateName,
-                  hintText: 'Full Name',
-                  prefixIcon: Icon(Icons.person_outline),
-                ),
-                SizedBox(height: 16),
-                CustomTextField(
-                  controller: usernameController,
-                  hintText: 'Username',
-                  focusNode: _usernameFocusNode,
-                  validator: _validateUsername,
-                  prefixIcon: Icon(Icons.alternate_email_outlined),
-                ),
-                SizedBox(height: 16),
-                CustomTextField(
-                  controller: emailController,
-                  hintText: 'Email',
-                  focusNode: _emailFocusNode,
-                  validator: _validateEmail,
-                  keyboardType: TextInputType.emailAddress,
+                  SizedBox(height: 10),
+                  Text(
+                    "Please fill in the details to create your account",
+                    style: Theme.of(
+                      context,
+                    ).textTheme.bodyLarge?.copyWith(color: Colors.grey),
+                  ),
+                  SizedBox(height: 30),
+                  CustomTextField(
+                    focusNode: _nameFocusNode,
+                    controller: nameController,
+                    validator: _validateName,
+                    hintText: 'Full Name',
+                    prefixIcon: Icon(Icons.person_outline),
+                  ),
+                  SizedBox(height: 16),
+                  CustomTextField(
+                    controller: usernameController,
+                    hintText: 'Username',
+                    focusNode: _usernameFocusNode,
+                    validator: _validateUsername,
+                    prefixIcon: Icon(Icons.alternate_email_outlined),
+                  ),
+                  SizedBox(height: 16),
+                  CustomTextField(
+                    controller: emailController,
+                    hintText: 'Email',
+                    focusNode: _emailFocusNode,
+                    validator: _validateEmail,
+                    keyboardType: TextInputType.emailAddress,
 
-                  prefixIcon: Icon(Icons.email_outlined),
-                ),
-                SizedBox(height: 16),
-                CustomTextField(
-                  controller: phoneController,
-                  hintText: 'Phone Number',
-                  focusNode: _phoneFocusNode,
-                  validator: _validatePhone,
-                  keyboardType: TextInputType.phone,
-                  prefixIcon: Icon(Icons.phone_outlined),
-                ),
-                SizedBox(height: 16),
-                CustomTextField(
-                  controller: passwordController,
-                  hintText: 'Password',
-                  focusNode: _passwordFocusNode,
-                  validator: _validatePassword,
-                  keyboardType: TextInputType.visiblePassword,
-                  obscureText: !_isPasswordVisible,
-                  prefixIcon: Icon(Icons.lock_outline),
-                  suffixIcon: IconButton(
-                    icon: Icon(
-                      _isPasswordVisible
-                          ? Icons.visibility_off_outlined
-                          : Icons.visibility_outlined,
-                    ),
-                    onPressed: () {
-                      setState(() {
-                        _isPasswordVisible = !_isPasswordVisible;
-                      });
-                    },
+                    prefixIcon: Icon(Icons.email_outlined),
                   ),
-                ),
-                SizedBox(height: 30),
-                CustomButton(text: 'Sign Up', onPressed: _handleSignUp),
-                SizedBox(height: 20),
-                Center(
-                  child: RichText(
-                    text: TextSpan(
-                      text: "Already have an account? ",
-                      style: Theme.of(
-                        context,
-                      ).textTheme.bodyMedium?.copyWith(color: Colors.grey),
-                      children: [
-                        TextSpan(
-                          text: "Login",
-                          style: Theme.of(context).textTheme.bodyMedium
-                              ?.copyWith(
-                                color: Theme.of(context).colorScheme.primary,
-                                fontWeight: FontWeight.bold,
-                              ),
-                          recognizer: TapGestureRecognizer()
-                            ..onTap = () {
-                              // Navigate to Sign in screen
-                              // Navigator.of(context).pop();
-                              getIt<AppRouter>().pop();
-                            },
-                        ),
-                      ],
+                  SizedBox(height: 16),
+                  CustomTextField(
+                    controller: phoneController,
+                    hintText: 'Phone Number',
+                    focusNode: _phoneFocusNode,
+                    validator: _validatePhone,
+                    keyboardType: TextInputType.phone,
+                    prefixIcon: Icon(Icons.phone_outlined),
+                  ),
+                  SizedBox(height: 16),
+                  CustomTextField(
+                    controller: passwordController,
+                    hintText: 'Password',
+                    focusNode: _passwordFocusNode,
+                    validator: _validatePassword,
+                    keyboardType: TextInputType.visiblePassword,
+                    obscureText: !_isPasswordVisible,
+                    prefixIcon: Icon(Icons.lock_outline),
+                    suffixIcon: IconButton(
+                      icon: Icon(
+                        _isPasswordVisible
+                            ? Icons.visibility_off_outlined
+                            : Icons.visibility_outlined,
+                      ),
+                      onPressed: () {
+                        setState(() {
+                          _isPasswordVisible = !_isPasswordVisible;
+                        });
+                      },
                     ),
                   ),
-                ),
-              ],
+                  SizedBox(height: 30),
+                  CustomButton(text: 'Sign Up', onPressed: _handleSignUp),
+                  SizedBox(height: 20),
+                  Center(
+                    child: RichText(
+                      text: TextSpan(
+                        text: "Already have an account? ",
+                        style: Theme.of(
+                          context,
+                        ).textTheme.bodyMedium?.copyWith(color: Colors.grey),
+                        children: [
+                          TextSpan(
+                            text: "Login",
+                            style: Theme.of(context).textTheme.bodyMedium
+                                ?.copyWith(
+                                  color: Theme.of(context).colorScheme.primary,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                            recognizer: TapGestureRecognizer()
+                              ..onTap = () {
+                                // Navigate to Sign in screen
+                                // Navigator.of(context).pop();
+                                getIt<AppRouter>().pop();
+                              },
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ],
+              ),
             ),
           ),
         ),
