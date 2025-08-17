@@ -127,7 +127,7 @@ class _SignupScreenState extends State<SignupScreen> {
 
       listener: (context, state) {
         if (state.status == AuthStatus.authenticated) {
-          getIt<AppRouter>().pushAndRemoveUntil(HomeScreen());
+          getIt<AppRouter>().pushAndRemoveUntil(const HomeScreen());
         } else if (state.status == AuthStatus.error && state.error != null) {
           UiUtils.showSnackbar(context, message: state.error!);
         }
@@ -143,36 +143,36 @@ class _SignupScreenState extends State<SignupScreen> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    SizedBox(height: 30),
+                    const SizedBox(height: 30),
                     Text(
                       "Create Account",
                       style: Theme.of(context).textTheme.headlineMedium
                           ?.copyWith(fontWeight: FontWeight.bold),
                     ),
-                    SizedBox(height: 10),
+                    const SizedBox(height: 10),
                     Text(
                       "Please fill in the details to create your account",
                       style: Theme.of(
                         context,
                       ).textTheme.bodyLarge?.copyWith(color: Colors.grey),
                     ),
-                    SizedBox(height: 30),
+                    const SizedBox(height: 30),
                     CustomTextField(
                       focusNode: _nameFocusNode,
                       controller: nameController,
                       validator: _validateName,
                       hintText: 'Full Name',
-                      prefixIcon: Icon(Icons.person_outline),
+                      prefixIcon: const Icon(Icons.person_outline),
                     ),
-                    SizedBox(height: 16),
+                    const SizedBox(height: 16),
                     CustomTextField(
                       controller: usernameController,
                       hintText: 'Username',
                       focusNode: _usernameFocusNode,
                       validator: _validateUsername,
-                      prefixIcon: Icon(Icons.alternate_email_outlined),
+                      prefixIcon: const Icon(Icons.alternate_email_outlined),
                     ),
-                    SizedBox(height: 16),
+                    const SizedBox(height: 16),
                     CustomTextField(
                       controller: emailController,
                       hintText: 'Email',
@@ -180,18 +180,18 @@ class _SignupScreenState extends State<SignupScreen> {
                       validator: _validateEmail,
                       keyboardType: TextInputType.emailAddress,
 
-                      prefixIcon: Icon(Icons.email_outlined),
+                      prefixIcon: const Icon(Icons.email_outlined),
                     ),
-                    SizedBox(height: 16),
+                    const SizedBox(height: 16),
                     CustomTextField(
                       controller: phoneController,
                       hintText: 'Phone Number',
                       focusNode: _phoneFocusNode,
                       validator: _validatePhone,
                       keyboardType: TextInputType.phone,
-                      prefixIcon: Icon(Icons.phone_outlined),
+                      prefixIcon: const Icon(Icons.phone_outlined),
                     ),
-                    SizedBox(height: 16),
+                    const SizedBox(height: 16),
                     CustomTextField(
                       controller: passwordController,
                       hintText: 'Password',
@@ -199,7 +199,7 @@ class _SignupScreenState extends State<SignupScreen> {
                       validator: _validatePassword,
                       keyboardType: TextInputType.visiblePassword,
                       obscureText: !_isPasswordVisible,
-                      prefixIcon: Icon(Icons.lock_outline),
+                      prefixIcon: const Icon(Icons.lock_outline),
                       suffixIcon: IconButton(
                         icon: Icon(
                           _isPasswordVisible
@@ -213,12 +213,12 @@ class _SignupScreenState extends State<SignupScreen> {
                         },
                       ),
                     ),
-                    SizedBox(height: 30),
+                    const SizedBox(height: 30),
                     CustomButton(
                       text: 'Sign Up',
                       onPressed: _handleSignUp,
                       child: state.status == AuthStatus.loading
-                          ? SizedBox(
+                          ? const SizedBox(
                               width: 25,
                               height: 25,
                               child: CircularProgressIndicator(
@@ -227,7 +227,7 @@ class _SignupScreenState extends State<SignupScreen> {
                             )
                           : null,
                     ),
-                    SizedBox(height: 20),
+                    const SizedBox(height: 20),
                     Center(
                       child: RichText(
                         text: TextSpan(

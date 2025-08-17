@@ -20,7 +20,7 @@ class MyApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       title: 'Messagner App',
       theme: AppTheme.lightTheme,
-      home: LoginScreen(),
+      home: const LoginScreen(),
     );
   }
 }

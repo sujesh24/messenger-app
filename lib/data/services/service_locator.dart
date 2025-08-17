@@ -4,6 +4,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 import 'package:messagener_app/data/repositories/auth_respoitory.dart';
+import 'package:messagener_app/data/repositories/contact_repositoy.dart';
 import 'package:messagener_app/firebase_options.dart';
 import 'package:messagener_app/logic/cubits/auth_cubit.dart';
 import 'package:messagener_app/router/app_router.dart';
@@ -17,5 +18,8 @@ Future<void> setupServiceLocator() async {
   getIt.registerLazySingleton(() => FirebaseAuth.instance);
   getIt.registerLazySingleton(() => FirebaseFirestore.instance);
   getIt.registerLazySingleton(() => AuthRepository());
-  getIt.registerLazySingleton(() => AuthCubit(authRepository: getIt<AuthRepository>()));
+  getIt.registerLazySingleton(() => ContactRepository());
+  getIt.registerLazySingleton(
+    () => AuthCubit(authRepository: getIt<AuthRepository>()),
+  );
 }
