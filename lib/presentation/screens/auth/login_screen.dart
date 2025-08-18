@@ -8,7 +8,7 @@ import 'package:messagener_app/data/services/service_locator.dart';
 import 'package:messagener_app/logic/cubits/auth_cubit.dart';
 import 'package:messagener_app/logic/cubits/auth_state.dart';
 import 'package:messagener_app/presentation/screens/auth/signup_screen.dart';
-import 'package:messagener_app/presentation/screens/home_screen.dart';
+import 'package:messagener_app/presentation/home/home_screen.dart';
 import 'package:messagener_app/router/app_router.dart';
 
 class LoginScreen extends StatefulWidget {
@@ -82,7 +82,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
       listener: (context, state) {
         if (state.status == AuthStatus.authenticated) {
-          getIt<AppRouter>().pushAndRemoveUntil(HomeScreen());
+          getIt<AppRouter>().pushAndRemoveUntil(const HomeScreen());
         } else if (state.status == AuthStatus.error && state.error != null) {
           UiUtils.showSnackbar(context, message: state.error!);
         }
@@ -98,29 +98,29 @@ class _LoginScreenState extends State<LoginScreen> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    SizedBox(height: 30),
+                    const SizedBox(height: 30),
                     Text(
                       "Welcome Back",
                       style: Theme.of(context).textTheme.headlineMedium
                           ?.copyWith(fontWeight: FontWeight.bold),
                     ),
-                    SizedBox(height: 10),
+                    const SizedBox(height: 10),
                     Text(
                       "Sign in to continue",
                       style: Theme.of(
                         context,
                       ).textTheme.bodyLarge?.copyWith(color: Colors.grey),
                     ),
-                    SizedBox(height: 30),
+                    const SizedBox(height: 30),
                     CustomTextField(
                       controller: emailController,
                       hintText: "Email",
                       focusNode: _emailFocusNode,
                       validator: _validateEmail,
                       keyboardType: TextInputType.emailAddress,
-                      prefixIcon: Icon(Icons.email_outlined),
+                      prefixIcon: const Icon(Icons.email_outlined),
                     ),
-                    SizedBox(height: 16),
+                    const SizedBox(height: 16),
                     CustomTextField(
                       controller: passwordController,
                       hintText: "Password",
@@ -140,14 +140,14 @@ class _LoginScreenState extends State<LoginScreen> {
                           });
                         },
                       ),
-                      prefixIcon: Icon(Icons.lock_outline),
+                      prefixIcon: const Icon(Icons.lock_outline),
                     ),
-                    SizedBox(height: 16),
+                    const SizedBox(height: 16),
                     CustomButton(
                       text: 'Login',
                       onPressed: _handleLogin,
                       child: state.status == AuthStatus.loading
-                          ? SizedBox(
+                          ? const SizedBox(
                               width: 25,
                               height: 25,
                               child: CircularProgressIndicator(
@@ -156,7 +156,7 @@ class _LoginScreenState extends State<LoginScreen> {
                             )
                           : null,
                     ),
-                    SizedBox(height: 20),
+                    const SizedBox(height: 20),
                     Center(
                       child: RichText(
                         text: TextSpan(
@@ -182,7 +182,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                   //     builder: (context) => SignupScreen(),
                                   //   ),
                                   // );
-                                  getIt<AppRouter>().push(SignupScreen());
+                                  getIt<AppRouter>().push(const SignupScreen());
                                 },
                             ),
                           ],
