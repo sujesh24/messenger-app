@@ -63,7 +63,12 @@ class _HomeScreenState extends State<HomeScreen> {
 
                           title: Text(contact['name']),
                           onTap: () {
-                            getIt<AppRouter>().push(const ChatMessageScreen());
+                            getIt<AppRouter>().push(
+                              ChatMessageScreen(
+                                reciverID: contact['id'],
+                                reciverName: contact['name'],
+                              ),
+                            );
                           },
                         );
                       },
