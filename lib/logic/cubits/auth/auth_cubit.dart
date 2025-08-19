@@ -4,7 +4,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import 'package:messagener_app/data/repositories/auth_respoitory.dart';
-import 'package:messagener_app/logic/cubits/auth_state.dart';
+import 'package:messagener_app/logic/cubits/auth/auth_state.dart';
 
 class AuthCubit extends Cubit<AuthState> {
   final AuthRepository _authRepository;

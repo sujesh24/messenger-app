@@ -1,6 +1,8 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:messagener_app/data/models/chat_message.dart';
+import 'package:messagener_app/data/services/service_locator.dart';
+import 'package:messagener_app/logic/cubits/chat/chat_cubit.dart';
 
 class ChatMessageScreen extends StatefulWidget {
   const ChatMessageScreen({
@@ -17,6 +19,24 @@ class ChatMessageScreen extends StatefulWidget {
 
 class _ChatMessageScreenState extends State<ChatMessageScreen> {
   final TextEditingController messageController = TextEditingController();
+  late final ChatCubit _chatCubit;
+
+  //
+  @override
+  void initState() {
+    _chatCubit = getIt<ChatCubit>();
+    _chatCubit.enterChat(widget.reciverID);
+    super.initState();
+  }
+
+  Future<void> _handleSendMessage() async {
+    final message = messageController.text.trim();
+    messageController.clear();
+    await _chatCubit.sendMessage(
+      content: message,
+      recviverId: widget.reciverID,
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -81,7 +101,7 @@ class _ChatMessageScreenState extends State<ChatMessageScreen> {
                     Expanded(
                       child: TextField(
                         onTap: () {
-                          //to do
+                          //
                         },
                         controller: messageController,
                         keyboardType: TextInputType.multiline,
@@ -104,7 +124,7 @@ class _ChatMessageScreenState extends State<ChatMessageScreen> {
                     ),
                     const SizedBox(width: 4),
                     IconButton(
-                      onPressed: () {},
+                      onPressed: _handleSendMessage,
                       icon: Icon(
                         Icons.send,
                         color: Theme.of(context).primaryColor,
