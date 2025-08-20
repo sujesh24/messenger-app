@@ -1,8 +1,10 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:messagener_app/data/models/chat_message.dart';
 import 'package:messagener_app/data/services/service_locator.dart';
 import 'package:messagener_app/logic/cubits/chat/chat_cubit.dart';
+import 'package:messagener_app/logic/cubits/chat/chat_state.dart';
 
 class ChatMessageScreen extends StatefulWidget {
   const ChatMessageScreen({
@@ -65,77 +67,81 @@ class _ChatMessageScreenState extends State<ChatMessageScreen> {
           IconButton(icon: const Icon(Icons.more_vert), onPressed: () {}),
         ],
       ),
-      body: Column(
-        children: [
-          Expanded(
-            child: ListView.builder(
-              itemCount: 4,
-              itemBuilder: (context, index) {
-                return ChatBubble(
-                  message: ChatMessage(
-                    id: '4848848',
-                    chatId: '123456',
-                    senderID: '654321',
-                    reciverId: '123456',
-                    content: 'Hello there this is me!',
-                    timestamp: Timestamp.now(),
-                    readBy: [],
-                  ),
-                  isMe: true,
-                );
-              },
-            ),
-          ),
-          // Message input field
-          Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: Column(
-              children: [
-                Row(
+      //{doc yet} about block builder
+      body: BlocBuilder<ChatCubit, ChatState>(
+        bloc: _chatCubit,
+        builder: (context, state) {
+          if (state.status == ChatStatus.loading) {
+            return const Center(child: CircularProgressIndicator());
+          }
+          if (state.status == ChatStatus.error) {
+            return Center(child: Text(state.error ?? 'Something went wrong!'));
+          }
+          return Column(
+            children: [
+              Expanded(
+                child: ListView.builder(
+                  reverse: true,
+                  itemCount: state.message.length,
+                  itemBuilder: (context, index) {
+                    final message = state.message[index];
+                    final isMe = message.senderID == _chatCubit.currentUserId;
+                    return ChatBubble(message: message, isMe: isMe);
+                  },
+                ),
+              ),
+              // Message input field
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Column(
                   children: [
-                    Icon(
-                      Icons.emoji_emotions,
-                      color: Theme.of(context).primaryColor,
-                    ),
-                    const SizedBox(width: 8),
-                    Expanded(
-                      child: TextField(
-                        onTap: () {
-                          //
-                        },
-                        controller: messageController,
-                        keyboardType: TextInputType.multiline,
-                        textCapitalization: TextCapitalization.sentences,
-                        // maxLines: null,
-                        decoration: InputDecoration(
-                          contentPadding: const EdgeInsets.symmetric(
-                            horizontal: 12,
-                            vertical: 8,
-                          ),
-                          hintText: 'type a message',
-                          filled: true,
-                          fillColor: Theme.of(context).cardColor,
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(20),
-                            borderSide: BorderSide.none,
+                    Row(
+                      children: [
+                        Icon(
+                          Icons.emoji_emotions,
+                          color: Theme.of(context).primaryColor,
+                        ),
+                        const SizedBox(width: 8),
+                        Expanded(
+                          child: TextField(
+                            onTap: () {
+                              //
+                            },
+                            controller: messageController,
+                            keyboardType: TextInputType.multiline,
+                            textCapitalization: TextCapitalization.sentences,
+                            // maxLines: null,
+                            decoration: InputDecoration(
+                              contentPadding: const EdgeInsets.symmetric(
+                                horizontal: 12,
+                                vertical: 8,
+                              ),
+                              hintText: 'type a message',
+                              filled: true,
+                              fillColor: Theme.of(context).cardColor,
+                              border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(20),
+                                borderSide: BorderSide.none,
+                              ),
+                            ),
                           ),
                         ),
-                      ),
-                    ),
-                    const SizedBox(width: 4),
-                    IconButton(
-                      onPressed: _handleSendMessage,
-                      icon: Icon(
-                        Icons.send,
-                        color: Theme.of(context).primaryColor,
-                      ),
+                        const SizedBox(width: 4),
+                        IconButton(
+                          onPressed: _handleSendMessage,
+                          icon: Icon(
+                            Icons.send,
+                            color: Theme.of(context).primaryColor,
+                          ),
+                        ),
+                      ],
                     ),
                   ],
                 ),
-              ],
-            ),
-          ),
-        ],
+              ),
+            ],
+          );
+        },
       ),
     );
   }

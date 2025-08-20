@@ -84,4 +84,38 @@ class ChatRepository extends BaseRepository {
     });
     await batch.commit();
   }
+
+  //get messages{doc yet}
+  Stream<List<ChatMessage>> getMessage(
+    String chatRoomId, {
+    DocumentSnapshot? lastDocument,
+  }) {
+    var query = getChatRoomMessages(
+      chatRoomId,
+    ).orderBy('timestamp', descending: true).limit(20);
+
+    if (lastDocument != null) {
+      query = query.startAfterDocument(lastDocument);
+    }
+
+    return query.snapshots().map(
+      (snapshot) =>
+          snapshot.docs.map((doc) => ChatMessage.fromFireStore(doc)).toList(),
+    );
+  }
+
+  //get more messages{doc yet}
+  Future<List<ChatMessage>> getMoreMessage(
+    String chatRoomId, {
+    required DocumentSnapshot lastDocument,
+  }) async {
+    final query = getChatRoomMessages(chatRoomId)
+        .orderBy('timestamp', descending: true)
+        .startAfterDocument(lastDocument)
+        .limit(20);
+
+    final snapshot = await query.get();
+
+    return snapshot.docs.map((doc) => ChatMessage.fromFireStore(doc)).toList();
+  }
 }
