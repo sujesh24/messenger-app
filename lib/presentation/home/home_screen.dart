@@ -1,9 +1,12 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:messagener_app/data/repositories/chat_repository.dart';
 import 'package:messagener_app/data/repositories/contact_repositoy.dart';
 import 'package:messagener_app/data/services/service_locator.dart';
 import 'package:messagener_app/logic/cubits/auth/auth_cubit.dart';
 import 'package:messagener_app/presentation/chat/chat_message_screen.dart';
 import 'package:messagener_app/presentation/screens/auth/login_screen.dart';
+import 'package:messagener_app/presentation/widgets/chat_list_tile.dart';
 import 'package:messagener_app/router/app_router.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -15,9 +18,13 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   late final ContactRepository _contactRepository;
+  late final ChatRepository _chatRepository;
+  late final String _currentUserId;
   @override
   void initState() {
     _contactRepository = getIt<ContactRepository>();
+    _chatRepository = getIt<ChatRepository>();
+    _currentUserId = getIt<FirebaseAuth>().currentUser?.uid ?? '';
     super.initState();
   }
 
@@ -97,8 +104,33 @@ class _HomeScreenState extends State<HomeScreen> {
             icon: const Icon(Icons.logout),
           ),
         ],
+      ), //{doc yet}
+      body: StreamBuilder(
+        stream: _chatRepository.getChatRoooms(_currentUserId),
+        builder: (context, snapshot) {
+          if (snapshot.hasError) {
+            return Center(child: Text('Error: ${snapshot.error}'));
+          }
+          if (!snapshot.hasData) {
+            return const Center(child: CircularProgressIndicator());
+          }
+          final chats = snapshot.data!;
+          if (chats.isEmpty) {
+            return const Center(child: Text('No Chats Found'));
+          }
+          return ListView.builder(
+            itemCount: chats.length,
+            itemBuilder: (context, index) {
+              final chat = chats[index];
+              return ChatListTile(
+                chat: chat,
+                currentUserID: _currentUserId,
+                onTap: () {},
+              );
+            },
+          );
+        },
       ),
-      body: const Center(child: Text('Nothing! here yet')),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
           _showContactist(context);

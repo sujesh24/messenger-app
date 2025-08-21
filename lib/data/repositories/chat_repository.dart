@@ -28,8 +28,8 @@ class ChatRepository extends BaseRepository {
         (await firestore.collection('users').doc(otherUserId).get()).data();
 
     final participantNames = {
-      currentUserId: currentUsedData?['name']?.toString() ?? '',
-      otherUserId: otherUsedData?['name']?.toString() ?? '',
+      currentUserId: currentUsedData?['fullName']?.toString() ?? '',
+      otherUserId: otherUsedData?['fullName']?.toString() ?? '',
     };
 
     final newRoom = ChatRoomModel(
@@ -117,5 +117,18 @@ class ChatRepository extends BaseRepository {
     final snapshot = await query.get();
 
     return snapshot.docs.map((doc) => ChatMessage.fromFireStore(doc)).toList();
+  }
+
+  //recent chat rooms{doc yet}
+  Stream<List<ChatRoomModel>> getChatRoooms(String userID) {
+    return _chatRoom
+        .where('participants', arrayContains: userID)
+        .orderBy('lastMessageTime', descending: true)
+        .snapshots()
+        .map(
+          (snapshot) => snapshot.docs
+              .map((doc) => ChatRoomModel.fromFireStore(doc))
+              .toList(),
+        );
   }
 }
