@@ -20,8 +20,12 @@ class ChatListTile extends StatelessWidget {
   String _getOtherUserNAme() {
     final otherUSerId = chat.participants.firstWhere(
       (id) => id != currentUserID,
+      orElse: () => '', // Add this line to prevent StateError
     );
-    final name = chat.participantNames![otherUSerId] ?? 'Unknown';
+
+    if (otherUSerId.isEmpty) return 'Unknown';
+
+    final name = chat.participantNames?[otherUSerId] ?? 'Unknown';
     return name.isNotEmpty ? name : 'Unknown';
   }
 

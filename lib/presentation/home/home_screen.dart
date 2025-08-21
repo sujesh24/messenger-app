@@ -125,7 +125,19 @@ class _HomeScreenState extends State<HomeScreen> {
               return ChatListTile(
                 chat: chat,
                 currentUserID: _currentUserId,
-                onTap: () {},
+                onTap: () {
+                  final otherUserId = chat.participants.firstWhere(
+                    (id) => id != _currentUserId,
+                  );
+                  final otherUserName =
+                      chat.participantNames?[otherUserId] ?? 'Unknown';
+                  getIt<AppRouter>().push(
+                    ChatMessageScreen(
+                      reciverID: otherUserId,
+                      reciverName: otherUserName,
+                    ),
+                  );
+                },
               );
             },
           );
