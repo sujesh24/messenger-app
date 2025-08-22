@@ -131,4 +131,13 @@ class ChatRepository extends BaseRepository {
               .toList(),
         );
   }
+
+  //get unread message count{doc yet}
+  Stream<int> getUnreadCount(String chatRoomId, String userId) {
+    return getChatRoomMessages(chatRoomId)
+        .where('reciverId', isEqualTo: userId)
+        .where('status', isEqualTo: MessageStatus.sent.toString())
+        .snapshots()
+        .map((snapshots) => snapshots.docs.length);
+  }
 }

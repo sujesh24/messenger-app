@@ -1,10 +1,14 @@
 //chat room model as chat
 //cuurent userid
 //callback ontap method
+//{doc yet}
 
 import 'package:flutter/material.dart';
+import 'package:get_it/get_it.dart';
 
 import 'package:messagener_app/data/models/chat_room_model.dart';
+import 'package:messagener_app/data/repositories/chat_repository.dart';
+import 'package:messagener_app/data/services/service_locator.dart';
 
 class ChatListTile extends StatelessWidget {
   const ChatListTile({
@@ -50,12 +54,26 @@ class ChatListTile extends StatelessWidget {
         style: TextStyle(color: Colors.grey[600]),
       ),
       onTap: onTap,
-      trailing: Container(
-        decoration: BoxDecoration(
-          color: Theme.of(context).primaryColor,
-          shape: BoxShape.circle,
-        ),
-        child: const Text('3'),
+      //stream builder
+      //if has no data return sized box otherwise return container
+      trailing: StreamBuilder<int>(
+        stream: getIt<ChatRepository>().getUnreadCount(chat.id, currentUserID),
+        builder: (context, snapshot) {
+          if (!snapshot.hasData || snapshot.data == 0) {
+            return const SizedBox();
+          }
+          return Container(
+            padding: const EdgeInsets.all(8),
+            decoration: BoxDecoration(
+              color: Theme.of(context).primaryColor,
+              shape: BoxShape.circle,
+            ),
+            child: Text(
+              snapshot.data.toString(),
+              style: const TextStyle(color: Colors.white),
+            ),
+          );
+        },
       ),
     );
   }
