@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:intl/intl.dart';
 import 'package:messagener_app/data/models/chat_message.dart';
 import 'package:messagener_app/data/services/service_locator.dart';
 import 'package:messagener_app/logic/cubits/chat/chat_cubit.dart';
@@ -187,25 +188,29 @@ class ChatBubble extends StatelessWidget {
           children: [
             Text(
               message.content,
-              style: TextStyle(color: isMe ? Colors.white : Colors.black),
+              style: TextStyle(
+                color: isMe ? Colors.white : Colors.black,
+                fontSize: 15,
+              ),
             ),
             Row(
               mainAxisSize: MainAxisSize.min,
               children: [
                 Text(
-                  '8:05AM',
+                  DateFormat('h:mm a').format(message.timestamp.toDate()),
                   style: TextStyle(
                     color: isMe ? Colors.white : Colors.black,
                     fontSize: 12,
                   ),
                 ),
-                Icon(
-                  Icons.done_all,
-                  size: 16,
-                  color: message.status == MessageStatus.read
-                      ? Colors.blue
-                      : Colors.white70,
-                ),
+                if (isMe)
+                  Icon(
+                    Icons.done_all,
+                    size: 16,
+                    color: message.status == MessageStatus.read
+                        ? Colors.blue
+                        : Colors.white70,
+                  ),
               ],
             ),
           ],
