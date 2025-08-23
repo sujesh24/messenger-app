@@ -40,6 +40,13 @@ class _ChatMessageScreenState extends State<ChatMessageScreen> {
   }
 
   @override
+  void dispose() {
+    messageController.dispose();
+    _chatCubit.leaveChat();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
@@ -187,13 +194,16 @@ class ChatBubble extends StatelessWidget {
               children: [
                 Text(
                   '8:05AM',
-                  style: TextStyle(color: isMe ? Colors.white : Colors.black),
+                  style: TextStyle(
+                    color: isMe ? Colors.white : Colors.black,
+                    fontSize: 12,
+                  ),
                 ),
                 Icon(
                   Icons.done_all,
                   size: 16,
                   color: message.status == MessageStatus.read
-                      ? Colors.red
+                      ? Colors.blue
                       : Colors.white70,
                 ),
               ],

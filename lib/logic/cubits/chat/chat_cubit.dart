@@ -9,6 +9,7 @@ import 'package:messagener_app/logic/cubits/chat/chat_state.dart';
 class ChatCubit extends Cubit<ChatState> {
   final String currentUserId;
   final ChatRepository _chatRepository;
+  bool _isInChat = false;
 
   StreamSubscription? _messgaeSubscription; //{doc yet}
 
@@ -20,6 +21,7 @@ class ChatCubit extends Cubit<ChatState> {
 
   // create or get  chat room
   void enterChat(String reciverId) async {
+    _isInChat = true;
     emit(state.copyWith(status: ChatStatus.loading));
     try {
       final chatRoom = await _chatRepository.getOrCreateChatRoom(
@@ -76,6 +78,9 @@ class ChatCubit extends Cubit<ChatState> {
         .getMessage(chatRoomId)
         .listen(
           (message) {
+            if (_isInChat) {
+              _markMessageAsRead(chatRoomId);
+            }
             emit(state.copyWith(message: message, error: null));
           },
           onError: (error) {
@@ -87,5 +92,16 @@ class ChatCubit extends Cubit<ChatState> {
             );
           },
         );
+  }
+
+  //
+  Future<void> _markMessageAsRead(String chatRoomId) async {
+    try {
+      await _chatRepository.markMessageAsRead(chatRoomId, currentUserId);
+    } catch (_) {}
+  }
+
+  Future<void> leaveChat() async {
+    _isInChat = false;
   }
 }
