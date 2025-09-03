@@ -62,9 +62,41 @@ class _ChatMessageScreenState extends State<ChatMessageScreen> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(widget.reciverName),
-                const Text(
-                  'Online',
-                  style: TextStyle(color: Colors.green, fontSize: 12),
+                BlocBuilder<ChatCubit, ChatState>(
+                  bloc: _chatCubit,
+                  builder: (context, state) {
+                    if (state.isReciverTyping) {
+                      return Row(
+                        children: [
+                          Container(
+                            margin: const EdgeInsets.only(right: 4),
+                            child: const Text('typing...'),
+                          ),
+                          Text(
+                            'Typing...',
+                            style: TextStyle(
+                              color: Theme.of(context).primaryColor,
+                              fontSize: 13,
+                            ),
+                          ),
+                        ],
+                      );
+                    }
+                    if (state.isReciverOnline) {
+                      return const Text(
+                        'Online',
+                        style: TextStyle(color: Colors.green, fontSize: 13),
+                      );
+                    }
+                    if (state.reciverLastSeen != null) {
+                      final lastSeen = state.reciverLastSeen!.toDate();
+                      return Text(
+                        'Last seen at ${DateFormat('h:mm a').format(lastSeen)}',
+                        style: TextStyle(color: Colors.grey[600], fontSize: 13),
+                      );
+                    }
+                    return const SizedBox();
+                  },
                 ),
               ],
             ),

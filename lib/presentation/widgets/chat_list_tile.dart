@@ -1,10 +1,4 @@
-//chat room model as chat
-//cuurent userid
-//callback ontap method
-//{doc yet}
-
 import 'package:flutter/material.dart';
-import 'package:get_it/get_it.dart';
 
 import 'package:messagener_app/data/models/chat_room_model.dart';
 import 'package:messagener_app/data/repositories/chat_repository.dart';
