@@ -112,7 +112,7 @@ class ChatCubit extends Cubit<ChatState> {
     _isInChat = false;
   }
 
-  //online status
+  //online status{doc yet}
   void _subscribeToOnlineStatus(String userId) {
     _onlineStatusSubscription?.cancel();
     _onlineStatusSubscription = _chatRepository
@@ -130,7 +130,7 @@ class ChatCubit extends Cubit<ChatState> {
         }, onError: (_) {});
   }
 
-  //typing status
+  //typing status{doc yet}
   void _subscribeToTypingStatus(String chatRoomId) {
     _typingSubscription?.cancel();
     _typingSubscription = _chatRepository.getTypingStatus(chatRoomId).listen((

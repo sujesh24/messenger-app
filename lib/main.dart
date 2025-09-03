@@ -1,6 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:messagener_app/config/theme/app_theme.dart';
+import 'package:messagener_app/data/repositories/chat_repository.dart';
 import 'package:messagener_app/data/services/service_locator.dart';
+import 'package:messagener_app/logic/cubits/auth/auth_cubit.dart';
+import 'package:messagener_app/logic/cubits/auth/auth_state.dart';
+import 'package:messagener_app/logic/observer/app_life_cycle_observer.dart';
+import 'package:messagener_app/presentation/home/home_screen.dart';
 import 'package:messagener_app/presentation/screens/auth/login_screen.dart';
 import 'package:messagener_app/router/app_router.dart';
 
@@ -10,8 +16,29 @@ void main() async {
   runApp(const MyApp());
 }
 
-class MyApp extends StatelessWidget {
+class MyApp extends StatefulWidget {
   const MyApp({super.key});
+
+  @override
+  State<MyApp> createState() => _MyAppState();
+}
+
+class _MyAppState extends State<MyApp> {
+  late AppLifeCycleObserver _LifeCycleObserver;
+
+  @override
+  void initState() {
+    getIt<AuthCubit>().stream.listen((state) {
+      if (state.status == AuthStatus.authenticated && state.user != null) {
+        _LifeCycleObserver = AppLifeCycleObserver(
+          userId: state.user!.uid,
+          chatRepository: getIt<ChatRepository>(),
+        );
+        WidgetsBinding.instance.addObserver(_LifeCycleObserver);
+      }
+    });
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -20,7 +47,21 @@ class MyApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       title: 'Messagner App',
       theme: AppTheme.lightTheme,
-      home: const LoginScreen(),
+      home: BlocBuilder<AuthCubit, AuthState>(
+        bloc: getIt<AuthCubit>(),
+        builder: (context, state) {
+          if (state.status == AuthStatus.initial) {
+            return const Scaffold(
+              body: Center(child: CircularProgressIndicator()),
+            );
+          }
+          if (state.status == AuthStatus.authenticated) {
+            return const HomeScreen();
+          } else {
+            return const LoginScreen();
+          }
+        },
+      ),
     );
   }
 }
