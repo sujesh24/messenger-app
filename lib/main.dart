@@ -33,7 +33,7 @@ class _MyAppState extends State<MyApp> {
         if (_lifeCycleObserver != null) {
           WidgetsBinding.instance.removeObserver(_lifeCycleObserver!);
         }
-
+        //binding
         _lifeCycleObserver = AppLifeCycleObserver(
           userId: state.user!.uid,
           chatRepository: getIt<ChatRepository>(),
