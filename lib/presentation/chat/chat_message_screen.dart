@@ -23,11 +23,14 @@ class _ChatMessageScreenState extends State<ChatMessageScreen> {
   final TextEditingController messageController = TextEditingController();
   late final ChatCubit _chatCubit;
 
+  bool _isComposing = false;
+
   //
   @override
   void initState() {
     _chatCubit = getIt<ChatCubit>();
     _chatCubit.enterChat(widget.reciverID);
+    messageController.addListener(_onTextChanged);
     super.initState();
   }
 
@@ -38,6 +41,20 @@ class _ChatMessageScreenState extends State<ChatMessageScreen> {
       content: message,
       recviverId: widget.reciverID,
     );
+  }
+
+  //isTyping{doc yet}
+
+  void _onTextChanged() {
+    final isCompoing = messageController.text.isNotEmpty;
+    if (isCompoing != _isComposing) {
+      setState(() {
+        _isComposing = isCompoing;
+      });
+      if (isCompoing) {
+        _chatCubit.startTimer();
+      }
+    }
   }
 
   @override
@@ -70,13 +87,12 @@ class _ChatMessageScreenState extends State<ChatMessageScreen> {
                         children: [
                           Container(
                             margin: const EdgeInsets.only(right: 4),
-                            child: const Text('typing...'),
-                          ),
-                          Text(
-                            'Typing...',
-                            style: TextStyle(
-                              color: Theme.of(context).primaryColor,
-                              fontSize: 13,
+                            child: Text(
+                              'typing...',
+                              style: TextStyle(
+                                color: Theme.of(context).primaryColor,
+                                fontSize: 13,
+                              ),
                             ),
                           ),
                         ],
