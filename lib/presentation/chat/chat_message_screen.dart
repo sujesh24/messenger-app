@@ -5,6 +5,7 @@ import 'package:messagener_app/data/models/chat_message.dart';
 import 'package:messagener_app/data/services/service_locator.dart';
 import 'package:messagener_app/logic/cubits/chat/chat_cubit.dart';
 import 'package:messagener_app/logic/cubits/chat/chat_state.dart';
+import 'package:messagener_app/presentation/widgets/loading_dots.dart';
 
 class ChatMessageScreen extends StatefulWidget {
   const ChatMessageScreen({
@@ -87,13 +88,7 @@ class _ChatMessageScreenState extends State<ChatMessageScreen> {
                         children: [
                           Container(
                             margin: const EdgeInsets.only(right: 4),
-                            child: Text(
-                              'typing...',
-                              style: TextStyle(
-                                color: Theme.of(context).primaryColor,
-                                fontSize: 13,
-                              ),
-                            ),
+                            child: const LoadingDots(),
                           ),
                         ],
                       );
