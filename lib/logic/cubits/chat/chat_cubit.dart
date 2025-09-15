@@ -173,4 +173,17 @@ class ChatCubit extends Cubit<ChatState> {
       );
     }, onError: (_) {});
   }
+
+  // block and unblock user
+  Future<void> blockUser(String userId) async {
+    try {
+      await _chatRepository.blockUser(currentUserId, userId);
+    } catch (_) {}
+  }
+
+  Future<void> unBlockUser(String userId) async {
+    try {
+      await _chatRepository.unBlockUser(currentUserId, userId);
+    } catch (_) {}
+  }
 }

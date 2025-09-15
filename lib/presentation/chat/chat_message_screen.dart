@@ -90,6 +90,13 @@ class _ChatMessageScreenState extends State<ChatMessageScreen> {
                             margin: const EdgeInsets.only(right: 4),
                             child: const LoadingDots(),
                           ),
+                          Text(
+                            'Typing',
+                            style: TextStyle(
+                              color: Theme.of(context).primaryColor,
+                              fontSize: 13,
+                            ),
+                          ),
                         ],
                       );
                     }
@@ -114,7 +121,62 @@ class _ChatMessageScreenState extends State<ChatMessageScreen> {
           ],
         ),
         actions: [
-          IconButton(icon: const Icon(Icons.more_vert), onPressed: () {}),
+          BlocBuilder<ChatCubit, ChatState>(
+            bloc: _chatCubit,
+            builder: (context, state) {
+              if (state.isUserBlocked) {
+                return TextButton.icon(
+                  onPressed: () async {
+                    await _chatCubit.unBlockUser(widget.reciverID);
+                  },
+                  label: const Text('Unblock'),
+                  icon: const Icon(Icons.block),
+                );
+              }
+
+              return PopupMenuButton<String>(
+                icon: const Icon(Icons.more_vert),
+                onSelected: (value) async {
+                  if (value == 'block') {
+                    final bool? confirm = await showDialog(
+                      context: context,
+                      builder: (context) => AlertDialog(
+                        title: Text(
+                          'Are you sure want to block ${widget.reciverName}',
+                        ),
+                        actions: [
+                          TextButton(
+                            onPressed: () {
+                              Navigator.pop(context);
+                            },
+                            child: const Text('cancel'),
+                          ),
+                          TextButton(
+                            onPressed: () {
+                              //todo
+                            },
+                            child: const Text(
+                              'Block',
+                              style: TextStyle(color: Colors.red),
+                            ),
+                          ),
+                        ],
+                      ),
+                    );
+                    if (confirm == true) {
+                      await _chatCubit.blockUser(widget.reciverID);
+                    }
+                  }
+                },
+                itemBuilder: (context) => <PopupMenuEntry<String>>[
+                  const PopupMenuItem(
+                    value: 'block',
+                    child: Text('Block User'),
+                  ),
+                ],
+              );
+            },
+          ),
         ],
       ),
       //{doc yet} about block builder
