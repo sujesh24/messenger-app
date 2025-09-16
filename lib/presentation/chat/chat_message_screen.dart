@@ -152,9 +152,7 @@ class _ChatMessageScreenState extends State<ChatMessageScreen> {
                             child: const Text('cancel'),
                           ),
                           TextButton(
-                            onPressed: () {
-                              //todo
-                            },
+                            onPressed: () => Navigator.pop(context, true),
                             child: const Text(
                               'Block',
                               style: TextStyle(color: Colors.red),
@@ -191,6 +189,16 @@ class _ChatMessageScreenState extends State<ChatMessageScreen> {
           }
           return Column(
             children: [
+              if (state.amIBlocked)
+                Container(
+                  color: Colors.red.withAlpha(25),
+                  padding: const EdgeInsets.all(8.0),
+                  child: Text(
+                    textAlign: TextAlign.center,
+                    'You are blocked by ${widget.reciverName}',
+                    style: const TextStyle(color: Colors.red),
+                  ),
+                ),
               Expanded(
                 child: ListView.builder(
                   reverse: true,
