@@ -15,6 +15,9 @@ class ChatCubit extends Cubit<ChatState> {
   StreamSubscription? _messgaeSubscription;
   StreamSubscription? _onlineStatusSubscription;
   StreamSubscription? _typingSubscription;
+  StreamSubscription? _blockStatusSubcription;
+  StreamSubscription? _amIBlockStatusSubcription;
+
   Timer? typingTimer;
 
   ChatCubit({
@@ -44,6 +47,7 @@ class ChatCubit extends Cubit<ChatState> {
       _subscribeToMessage(chatRoom.id);
       _subscribeToOnlineStatus(reciverId);
       _subscribeToTypingStatus(chatRoom.id);
+      _subcribeToBlockStatus(reciverId);
 
       await _chatRepository.updateUserStatus(currentUserId, true);
     } catch (e) {
@@ -185,5 +189,23 @@ class ChatCubit extends Cubit<ChatState> {
     try {
       await _chatRepository.unBlockUser(currentUserId, userId);
     } catch (_) {}
+  }
+
+  //status
+
+  void _subcribeToBlockStatus(String otherUSerId) {
+    _blockStatusSubcription?.cancel();
+    _blockStatusSubcription = _chatRepository
+        .isUserBlocked(currentUserId, otherUSerId)
+        .listen((isBlock) {
+          emit(state.copyWith(isUserBlocked: isBlock));
+        }, onError: (_) {});
+
+    _amIBlockStatusSubcription?.cancel();
+    _amIBlockStatusSubcription = _chatRepository
+        .imIBlocked(currentUserId, otherUSerId)
+        .listen((isBlock) {
+          emit(state.copyWith(amIBlocked: isBlock));
+        }, onError: (_) {});
   }
 }

@@ -209,7 +209,7 @@ class ChatRepository extends BaseRepository {
       final data = snapshot.data() as Map<String, dynamic>;
       return {
         'isTyping': data['isTyping'] ?? false,
-        'typingUserId': ['typingUserId'],
+        'typingUserId': data['typingUserId'],
       };
     });
   }
@@ -217,14 +217,14 @@ class ChatRepository extends BaseRepository {
   //block and unblock{doc yet}
 
   Future<void> blockUser(String currentUserId, String otherUserId) async {
-    final userRef = firestore.collection('user').doc(currentUserId);
+    final userRef = firestore.collection('users').doc(currentUserId);
     await userRef.update({
       'blockedUsers': FieldValue.arrayUnion([otherUserId]),
     });
   }
 
-  Future<void> unBlockUser(String currentUSerId, String otherUserId) async {
-    final userRef = firestore.collection('user').doc(currentUSerId);
+  Future<void> unBlockUser(String currentUUserId, String otherUserId) async {
+    final userRef = firestore.collection('users').doc(currentUUserId);
     await userRef.update({
       'blockedUsers': FieldValue.arrayRemove([otherUserId]),
     });
@@ -232,7 +232,7 @@ class ChatRepository extends BaseRepository {
 
   //check block or unblock
   Stream<bool> isUserBlocked(String currentUserId, String otherUSerId) {
-    return firestore.collection('user').doc(currentUserId).snapshots().map((
+    return firestore.collection('users').doc(currentUserId).snapshots().map((
       doc,
     ) {
       final userData = UserModel.fromFirestore(doc);
@@ -241,7 +241,9 @@ class ChatRepository extends BaseRepository {
   }
 
   Stream<bool> imIBlocked(String currentUserId, String otherUserId) {
-    return firestore.collection('user').doc(otherUserId).snapshots().map((doc) {
+    return firestore.collection('users').doc(otherUserId).snapshots().map((
+      doc,
+    ) {
       final userData = UserModel.fromFirestore(doc);
       return userData.blockedUsers.contains(currentUserId);
     });

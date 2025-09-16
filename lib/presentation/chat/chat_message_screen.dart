@@ -211,54 +211,55 @@ class _ChatMessageScreenState extends State<ChatMessageScreen> {
                 ),
               ),
               // Message input field
-              Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Column(
-                  children: [
-                    Row(
-                      children: [
-                        Icon(
-                          Icons.emoji_emotions,
-                          color: Theme.of(context).primaryColor,
-                        ),
-                        const SizedBox(width: 8),
-                        Expanded(
-                          child: TextField(
-                            onTap: () {
-                              //
-                            },
-                            controller: messageController,
-                            keyboardType: TextInputType.multiline,
-                            textCapitalization: TextCapitalization.sentences,
-                            // maxLines: null,
-                            decoration: InputDecoration(
-                              contentPadding: const EdgeInsets.symmetric(
-                                horizontal: 12,
-                                vertical: 8,
-                              ),
-                              hintText: 'type a message',
-                              filled: true,
-                              fillColor: Theme.of(context).cardColor,
-                              border: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(20),
-                                borderSide: BorderSide.none,
+              if (!state.amIBlocked && !state.isUserBlocked)
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Column(
+                    children: [
+                      Row(
+                        children: [
+                          Icon(
+                            Icons.emoji_emotions,
+                            color: Theme.of(context).primaryColor,
+                          ),
+                          const SizedBox(width: 8),
+                          Expanded(
+                            child: TextField(
+                              onTap: () {
+                                //
+                              },
+                              controller: messageController,
+                              keyboardType: TextInputType.multiline,
+                              textCapitalization: TextCapitalization.sentences,
+                              // maxLines: null,
+                              decoration: InputDecoration(
+                                contentPadding: const EdgeInsets.symmetric(
+                                  horizontal: 12,
+                                  vertical: 8,
+                                ),
+                                hintText: 'type a message',
+                                filled: true,
+                                fillColor: Theme.of(context).cardColor,
+                                border: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(20),
+                                  borderSide: BorderSide.none,
+                                ),
                               ),
                             ),
                           ),
-                        ),
-                        const SizedBox(width: 4),
-                        IconButton(
-                          onPressed: _handleSendMessage,
-                          icon: Icon(
-                            Icons.send,
-                            color: Theme.of(context).primaryColor,
+                          const SizedBox(width: 4),
+                          IconButton(
+                            onPressed: _handleSendMessage,
+                            icon: Icon(
+                              Icons.send,
+                              color: Theme.of(context).primaryColor,
+                            ),
                           ),
-                        ),
-                      ],
-                    ),
-                  ],
+                        ],
+                      ),
+                    ],
+                  ),
                 ),
-              ),
             ],
           );
         },
