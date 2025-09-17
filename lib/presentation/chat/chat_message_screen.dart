@@ -23,6 +23,8 @@ class ChatMessageScreen extends StatefulWidget {
 class _ChatMessageScreenState extends State<ChatMessageScreen> {
   final TextEditingController messageController = TextEditingController();
   late final ChatCubit _chatCubit;
+  final _scrollController = ScrollController();
+  List<ChatMessage> _previousMessages = [];
 
   bool _isComposing = false;
 
@@ -30,9 +32,39 @@ class _ChatMessageScreenState extends State<ChatMessageScreen> {
   @override
   void initState() {
     _chatCubit = getIt<ChatCubit>();
+    _scrollController.addListener(_onScroll);
     _chatCubit.enterChat(widget.reciverID);
     messageController.addListener(_onTextChanged);
+
     super.initState();
+  }
+
+  //load more
+  void _onScroll() {
+    if (_scrollController.position.pixels >=
+        _scrollController.position.maxScrollExtent - 200) {
+      _chatCubit.loadMoreMessages();
+    }
+  }
+
+  //scroll to bottom
+  void _scrollToBottom() {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (_scrollController.hasClients) {
+        _scrollController.animateTo(
+          0.0,
+          duration: const Duration(milliseconds: 300),
+          curve: Curves.easeOut,
+        );
+      }
+    });
+  }
+
+  void _hasNewMessages(List<ChatMessage> messages) {
+    if (messages.length != _previousMessages.length) {
+      _scrollToBottom();
+      _previousMessages = messages;
+    }
   }
 
   Future<void> _handleSendMessage() async {
@@ -62,6 +94,7 @@ class _ChatMessageScreenState extends State<ChatMessageScreen> {
   void dispose() {
     messageController.dispose();
     _chatCubit.leaveChat();
+    _scrollController.dispose();
     super.dispose();
   }
 
@@ -80,7 +113,10 @@ class _ChatMessageScreenState extends State<ChatMessageScreen> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(widget.reciverName),
-                BlocBuilder<ChatCubit, ChatState>(
+                BlocConsumer<ChatCubit, ChatState>(
+                  listener: (context, state) {
+                    _hasNewMessages(state.message);
+                  },
                   bloc: _chatCubit,
                   builder: (context, state) {
                     if (state.isReciverTyping) {
@@ -201,6 +237,7 @@ class _ChatMessageScreenState extends State<ChatMessageScreen> {
                 ),
               Expanded(
                 child: ListView.builder(
+                  controller: _scrollController,
                   reverse: true,
                   itemCount: state.message.length,
                   itemBuilder: (context, index) {
@@ -249,10 +286,12 @@ class _ChatMessageScreenState extends State<ChatMessageScreen> {
                           ),
                           const SizedBox(width: 4),
                           IconButton(
-                            onPressed: _handleSendMessage,
+                            onPressed: _isComposing ? _handleSendMessage : null,
                             icon: Icon(
                               Icons.send,
-                              color: Theme.of(context).primaryColor,
+                              color: _isComposing
+                                  ? Theme.of(context).primaryColor
+                                  : Colors.grey,
                             ),
                           ),
                         ],
